@@ -45,25 +45,25 @@ export default function VendorDashboardPage() {
       title: "Total Products",
       value: stats.totalProducts,
       icon: Package,
-      gradient: "from-[#A1C4FD] to-[#C2E9FB]",
+      gradient: "from-blue-400 to-cyan-300",
     },
     {
       title: "In Stock",
       value: stats.inStock,
       icon: TrendingUp,
-      gradient: "from-[#FAD0C4] to-[#FFD1FF]",
+      gradient: "from-rose-300 to-pink-300",
     },
     {
       title: "Low Stock",
       value: stats.lowStock,
       icon: ShoppingBag,
-      gradient: "from-[#FFA07A] to-[#FFB6C1]",
+      gradient: "from-orange-300 to-red-300",
     },
     {
       title: "Total Inventory Value",
       value: `$${stats.totalValue.toFixed(2)}`,
       icon: DollarSign,
-      gradient: "from-[#98D8C8] to-[#B5EAD7]",
+      gradient: "from-emerald-300 to-teal-300",
     },
   ]
 
@@ -80,9 +80,9 @@ export default function VendorDashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
               <div
-                className={`h-10 w-10 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center`}
+                className={`h-12 w-12 rounded-xl bg-linear-to-br ${stat.gradient} flex items-center justify-center shadow-md`}
               >
-                <stat.icon className="h-5 w-5 text-white" />
+                <stat.icon className="h-6 w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent>

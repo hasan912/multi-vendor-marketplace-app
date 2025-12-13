@@ -29,10 +29,28 @@ export interface Order {
 }
 
 export async function createOrder(orderData: Omit<Order, "id" | "createdAt">) {
-  const docRef = await addDoc(collection(db, "orders"), {
-    ...orderData,
+  // Remove undefined fields
+  const cleanOrderData: any = {
+    userId: orderData.userId,
+    vendorId: orderData.vendorId,
+    items: orderData.items,
+    totalAmount: orderData.totalAmount,
+    status: orderData.status,
     createdAt: new Date(),
-  })
+  }
+
+  // Only add shippingAddress if it exists and has values
+  if (orderData.shippingAddress) {
+    cleanOrderData.shippingAddress = {
+      fullName: orderData.shippingAddress.fullName || "",
+      address: orderData.shippingAddress.address || "",
+      city: orderData.shippingAddress.city || "",
+      state: orderData.shippingAddress.state || "",
+      zipCode: orderData.shippingAddress.zipCode || "",
+    }
+  }
+
+  const docRef = await addDoc(collection(db, "orders"), cleanOrderData)
   return docRef.id
 }
 

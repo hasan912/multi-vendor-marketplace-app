@@ -41,6 +41,15 @@ export default function NewProductPage() {
       return
     }
 
+    // Check file sizes (warn if > 5MB)
+    const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024)
+    if (oversizedFiles.length > 0) {
+      toast({
+        title: "Large images detected",
+        description: "Some images are very large and will be compressed automatically",
+      })
+    }
+
     setImageFiles([...imageFiles, ...files])
     files.forEach((file) => {
       const reader = new FileReader()
@@ -60,9 +69,44 @@ export default function NewProductPage() {
     e.preventDefault()
     if (!userProfile?.uid) return
 
+    // Validation
+    if (!formData.title.trim() || !formData.category || !formData.description.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill all required fields",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (Number.parseFloat(formData.price) <= 0 || Number.parseInt(formData.stock) < 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter valid price and stock values",
+        variant: "destructive",
+      })
+      return
+    }
+
     setLoading(true)
     try {
-      // Create product first to get ID
+      // Upload images first (convert to base64)
+      const imageUrls: string[] = []
+      for (const file of imageFiles) {
+        try {
+          const url = await uploadProductImage(file, "temp")
+          imageUrls.push(url)
+        } catch (imgError) {
+          console.error("Error uploading image:", imgError)
+          toast({
+            title: "Image upload warning",
+            description: "Some images failed to upload",
+            variant: "destructive",
+          })
+        }
+      }
+
+      // Create product with images
       const productId = await createProduct({
         title: formData.title,
         price: Number.parseFloat(formData.price),
@@ -71,20 +115,8 @@ export default function NewProductPage() {
         stock: Number.parseInt(formData.stock),
         vendorId: userProfile.uid,
         vendorName: userProfile.displayName,
-        images: [],
+        images: imageUrls,
       })
-
-      // Upload images
-      const imageUrls: string[] = []
-      for (const file of imageFiles) {
-        const url = await uploadProductImage(file, productId)
-        imageUrls.push(url)
-      }
-
-      // Update product with image URLs
-      if (imageUrls.length > 0) {
-        await updateProduct(productId, { images: imageUrls })
-      }
 
       toast({
         title: "Product created!",
@@ -92,6 +124,7 @@ export default function NewProductPage() {
       })
       router.push("/vendor/products")
     } catch (error: any) {
+      console.error("Product creation error:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to create product",

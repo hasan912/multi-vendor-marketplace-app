@@ -97,7 +97,34 @@ export default function VendorProductsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <Card key={product.id} className="rounded-2xl border-border hover:shadow-lg transition-shadow">
+            <Card key={product.id} className="rounded-2xl border-border hover:shadow-lg transition-shadow overflow-hidden">
+              {/* Product Image with indicator for multiple images */}
+              {product.images && product.images.length > 0 ? (
+                <div className="relative aspect-video w-full bg-muted overflow-hidden group">
+                  <img
+                    src={product.images[0]}
+                    alt={product.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder.svg'
+                    }}
+                  />
+                  {/* Multiple images indicator */}
+                  {product.images.length > 1 && (
+                    <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
+                      </svg>
+                      {product.images.length}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="relative aspect-video w-full bg-muted flex items-center justify-center">
+                  <span className="text-muted-foreground text-sm">No Image</span>
+                </div>
+              )}
+              
               <CardContent className="p-6">
                 <h3 className="font-bold text-lg mb-2 line-clamp-2">{product.title}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{product.category}</p>

@@ -5,10 +5,11 @@ import { useParams, useRouter } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import { getProductById, type Product } from "@/lib/firebase/products"
-import { ShoppingCart, Store } from "lucide-react"
+import { ShoppingCart, Store, BadgeCheck, Share2, Heart } from "lucide-react"
 import { useAuth } from "@/providers/auth-provider"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
+import { motion } from "framer-motion"
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -58,6 +59,7 @@ export default function ProductDetailPage() {
         price: product?.price,
         image: product?.images[0],
         quantity: 1,
+        vendorId: product?.vendorId,
       })
     }
 
@@ -73,10 +75,13 @@ export default function ProductDetailPage() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-96 bg-muted rounded-2xl mb-8" />
-            <div className="h-12 bg-muted rounded-xl w-3/4 mb-4" />
-            <div className="h-6 bg-muted rounded-xl w-1/2" />
+          <div className="animate-pulse grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="h-96 bg-muted rounded-3xl" />
+            <div className="space-y-4">
+              <div className="h-12 bg-muted rounded-xl w-3/4" />
+              <div className="h-6 bg-muted rounded-xl w-1/4" />
+              <div className="h-24 bg-muted rounded-xl" />
+            </div>
           </div>
         </div>
       </div>
@@ -87,33 +92,39 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <p className="text-center text-muted-foreground">Product not found</p>
+        <div className="container mx-auto px-4 py-20 text-center">
+          <h2 className="text-2xl font-bold mb-4">Product not found</h2>
+          <Button onClick={() => router.push("/products")}>Browse Products</Button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Images */}
-          <div className="space-y-4">
-            <div className="aspect-square rounded-2xl overflow-hidden bg-muted relative">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-6"
+          >
+            <div className="aspect-square rounded-3xl overflow-hidden bg-muted/30 relative border border-border/50 shadow-sm group">
               {product.images[selectedImage] ? (
                 <Image
                   src={product.images[selectedImage] || "/placeholder.svg"}
                   alt={product.title}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Store className="h-20 w-20 text-muted-foreground" />
+                  <Store className="h-24 w-24 text-muted-foreground/30" />
                 </div>
               )}
             </div>
@@ -123,8 +134,8 @@ export default function ProductDetailPage() {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all ${
-                      selectedImage === index ? "border-primary" : "border-transparent"
+                    className={`aspect-square rounded-2xl overflow-hidden border-2 transition-all hover:scale-105 ${
+                      selectedImage === index ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-70 hover:opacity-100"
                     }`}
                   >
                     <Image
@@ -138,48 +149,75 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Product Info */}
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-4xl font-bold mb-2 text-balance">{product.title}</h1>
-              <p className="text-muted-foreground">{product.category}</p>
-            </div>
-
-            <div className="text-4xl font-bold bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
-              ${product.price.toFixed(2)}
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="font-semibold text-lg">Description</h3>
-              <p className="text-muted-foreground leading-relaxed text-pretty">{product.description}</p>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <Store className="h-4 w-4" />
-              <span className="text-muted-foreground">Sold by: {product.vendorName || "MarketHub Vendor"}</span>
-            </div>
-
-            <div className="border-t border-border pt-6">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-sm text-muted-foreground">Stock:</span>
-                <span className={`font-semibold ${product.stock > 0 ? "text-green-600" : "text-destructive"}`}>
-                  {product.stock > 0 ? `${product.stock} available` : "Out of stock"}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-8"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-sm font-medium">
+                  {product.category}
                 </span>
+                <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                        <Share2 className="w-5 h-5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                        <Heart className="w-5 h-5" />
+                    </Button>
+                </div>
               </div>
-
-              <Button
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
-                size="lg"
-                className="w-full rounded-xl bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] hover:opacity-90 text-white font-semibold shadow-lg"
-              >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
-              </Button>
+              
+              <h1 className="text-4xl md:text-5xl font-bold text-balance leading-tight">{product.title}</h1>
+              
+              <div className="flex items-end gap-4">
+                <div className="text-4xl font-bold text-primary">
+                  ${product.price.toFixed(2)}
+                </div>
+                {product.stock > 0 && (
+                  <div className="flex items-center text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full text-sm font-semibold mb-1">
+                    <BadgeCheck className="w-4 h-4 mr-1" /> In Stock
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+                    <Store className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <div>
+                     <p className="text-sm text-muted-foreground">Sold by</p>
+                     <p className="font-semibold">{product.vendorName || "Verified Vendor"}</p>
+                </div>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="font-semibold text-xl">Description</h3>
+              <p className="text-muted-foreground leading-relaxed text-lg">{product.description}</p>
+            </div>
+
+            <div className="pt-6 border-t border-border">
+              <div className="flex flex-col gap-4">
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0}
+                  size="lg"
+                  className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <ShoppingCart className="mr-2 h-6 w-6" />
+                  {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                </Button>
+                <p className="text-center text-sm text-muted-foreground">
+                    Free shipping on orders over $50 • 30-day return policy
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -113,7 +113,7 @@ export default function CheckoutPage() {
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-8 text-gradient">
           Checkout
         </h1>
 
@@ -183,8 +183,8 @@ export default function CheckoutPage() {
 
                   <Button
                     type="submit"
-                    className="w-full rounded-xl bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] hover:opacity-90 text-white font-semibold"
                     disabled={loading}
+                    className="w-full rounded-xl"
                   >
                     {loading ? "Processing..." : "Place Order"}
                   </Button>
@@ -212,7 +212,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-border pt-4">
                   <div className="flex justify-between text-lg">
                     <span className="font-bold">Total</span>
-                    <span className="font-bold bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+                    <span className="font-bold text-primary">
                       ${getTotalPrice().toFixed(2)}
                     </span>
                   </div>

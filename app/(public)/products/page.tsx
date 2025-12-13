@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { ProductCard } from "@/components/product-card"
 import { getProducts, type Product, CATEGORIES } from "@/lib/firebase/products"
@@ -9,15 +10,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search } from "lucide-react"
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams()
+  const categoryFromUrl = searchParams.get("category")
+  
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryFromUrl || "all")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadProducts()
   }, [])
+
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl)
+    }
+  }, [categoryFromUrl])
 
   useEffect(() => {
     filterProducts()
@@ -59,30 +69,17 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-gradient">
             All Products
           </h1>
-          <p className="text-muted-foreground">Discover amazing products from verified vendors</p>
+          <p className="text-muted-foreground text-sm sm:text-base">Discover amazing products from verified vendors</p>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-xl"
-            />
-          </div>
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-full md:w-64 rounded-xl">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
+        <div className="flex flex-col md:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">\n          <div className="relative flex-1\">\n            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground/60 transition-colors group-hover:text-primary" /><Input    placeholder="Search products..."           value={searchQuery}          onChange={(e) => setSearchQuery(e.target.value)}            className="pl-10 sm:pl-12 rounded-full border-border/60 bg-card/60 backdrop-blur-sm focus-visible:ring-primary/20 h-11 sm:h-12 shadow-sm transition-all hover:shadow-md focus-visible:shadow-md text-sm sm:text-base"            />         </div>        <Select value={selectedCategory} onValueChange={setSelectedCategory}>\n            <SelectTrigger className="w-full md:w-64 rounded-full border-border/60 bg-card/60 backdrop-blur-sm h-11 sm:h-12 shadow-sm transition-all hover:shadow-md text-sm sm:text-base\">             <SelectValue placeholder="All Categories" />            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               {CATEGORIES.map((category) => (

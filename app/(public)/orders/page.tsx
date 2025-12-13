@@ -55,7 +55,7 @@ export default function OrdersPage() {
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-8 text-gradient">
           My Orders
         </h1>
 
@@ -104,7 +104,7 @@ export default function OrdersPage() {
                   <div className="border-t border-border pt-4">
                     <div className="flex justify-between">
                       <span className="font-bold">Total</span>
-                      <span className="font-bold text-xl bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+                      <span className="font-bold text-xl text-primary">
                         ${order.totalAmount.toFixed(2)}
                       </span>
                     </div>

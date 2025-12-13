@@ -100,11 +100,20 @@ export default function EditProductPage() {
 
     setLoading(true)
     try {
-      // Upload new images
+      // Upload new images (convert to base64)
       const newImageUrls: string[] = []
       for (const file of imageFiles) {
-        const url = await uploadProductImage(file, params.id as string)
-        newImageUrls.push(url)
+        try {
+          const url = await uploadProductImage(file, params.id as string)
+          newImageUrls.push(url)
+        } catch (imgError) {
+          console.error("Error uploading image:", imgError)
+          toast({
+            title: "Image upload warning",
+            description: "Some images failed to upload",
+            variant: "destructive",
+          })
+        }
       }
 
       // Update product
@@ -123,6 +132,7 @@ export default function EditProductPage() {
       })
       router.push("/vendor/products")
     } catch (error: any) {
+      console.error("Product update error:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to update product",

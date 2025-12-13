@@ -16,6 +16,7 @@ interface CartItem {
   price: number
   image: string
   quantity: number
+  vendorId?: string
 }
 
 export default function CartPage() {
@@ -69,7 +70,7 @@ export default function CartPage() {
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-8 text-primary">
           Shopping Cart
         </h1>
 
@@ -79,7 +80,7 @@ export default function CartPage() {
               <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
               <h3 className="text-xl font-semibold mb-2">Your cart is empty</h3>
               <p className="text-muted-foreground mb-6">Add some products to get started</p>
-              <Button asChild className="rounded-xl bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] hover:opacity-90">
+              <Button asChild className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
                 <Link href="/products">Browse Products</Link>
               </Button>
             </CardContent>
@@ -91,7 +92,7 @@ export default function CartPage() {
                 <Card key={item.productId} className="rounded-2xl border-border">
                   <CardContent className="p-6">
                     <div className="flex gap-6">
-                      <div className="w-24 h-24 rounded-xl overflow-hidden bg-muted flex-shrink-0 relative">
+                      <div className="w-24 h-24 rounded-xl overflow-hidden bg-muted shrink-0 relative">
                         <Image
                           src={item.image || "/placeholder.svg"}
                           alt={item.title}
@@ -102,7 +103,7 @@ export default function CartPage() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-                        <p className="text-2xl font-bold bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+                        <p className="text-2xl font-bold text-primary">
                           ${item.price.toFixed(2)}
                         </p>
                       </div>
@@ -157,7 +158,7 @@ export default function CartPage() {
                     <div className="border-t border-border pt-3">
                       <div className="flex justify-between text-lg">
                         <span className="font-bold">Total</span>
-                        <span className="font-bold bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] bg-clip-text text-transparent">
+                        <span className="font-bold text-primary">
                           ${getTotalPrice().toFixed(2)}
                         </span>
                       </div>
@@ -165,7 +166,7 @@ export default function CartPage() {
                   </div>
                   <Button
                     onClick={handleCheckout}
-                    className="w-full rounded-xl bg-gradient-to-r from-[#A1C4FD] to-[#C2E9FB] hover:opacity-90 text-white font-semibold"
+                    className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 shadow-lg shadow-primary/20"
                   >
                     Proceed to Checkout
                   </Button>

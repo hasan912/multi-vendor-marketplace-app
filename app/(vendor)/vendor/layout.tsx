@@ -32,17 +32,27 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
 
   return (
     <div className="h-screen flex">
+      {/* Desktop Sidebar */}
       <aside className="w-64 hidden md:block">
         <VendorSidebar />
       </aside>
+      
       <main className="flex-1 overflow-auto">
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="flex items-center justify-between px-6 py-4">
-            <h2 className="text-2xl font-bold">Vendor Dashboard</h2>
-            <ThemeToggle />
+          <div className="flex items-center justify-between px-4 md:px-6 py-4">
+            <div className="flex items-center gap-2">
+              {/* Mobile Sidebar */}
+              <div className="md:hidden">
+                <VendorSidebar mobile />
+              </div>
+              <h2 className="text-xl md:text-2xl font-bold">Vendor Dashboard</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-4 md:p-6">{children}</div>
       </main>
     </div>
   )
