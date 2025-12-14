@@ -46,7 +46,18 @@ export default function CheckoutPage() {
       router.push("/cart")
       return
     }
-    setCartItems(cart)
+    
+    // Ensure all cart items have required fields (for backward compatibility)
+    const validatedCart = cart.map((item: any) => ({
+      productId: item.productId || "",
+      title: item.title || "Unknown Product",
+      price: item.price || 0,
+      image: item.image || "",
+      quantity: item.quantity || 1,
+      vendorId: item.vendorId || "unknown",
+    }))
+    
+    setCartItems(validatedCart)
   }, [user, router])
 
   const getTotalPrice = () => {
@@ -74,17 +85,23 @@ export default function CheckoutPage() {
         const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
         await createOrder({
           userId: user.uid,
-          vendorId,
+          vendorId: vendorId || "unknown",
           items: items.map((item) => ({
-            productId: item.productId,
-            title: item.title,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image,
+            productId: item.productId || "",
+            title: item.title || "Unknown Product",
+            price: item.price || 0,
+            quantity: item.quantity || 1,
+            image: item.image || "",
           })),
           totalAmount,
           status: "pending",
-          shippingAddress: formData,
+          shippingAddress: {
+            fullName: formData.fullName || "",
+            address: formData.address || "",
+            city: formData.city || "",
+            state: formData.state || "",
+            zipCode: formData.zipCode || "",
+          },
         })
       }
 
@@ -98,6 +115,7 @@ export default function CheckoutPage() {
 
       router.push("/orders")
     } catch (error: any) {
+      console.error("Order creation error:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to place order",
